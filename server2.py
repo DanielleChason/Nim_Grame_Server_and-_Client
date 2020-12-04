@@ -5,9 +5,11 @@ import errno
 import struct
 import sys
 from socket import *
+import binascii
 
 def sendall(socket, a, b, c, win, legal_move):
     data=( a, b, c, win, legal_move)
+    print(*data)
     packed_data=pack.pack(*data)
     return socket.send(packed_data)
 
@@ -17,7 +19,7 @@ while True:
     n_c=0
     port=6444
 
-    if not(len(sys.argv<=4)):
+    if (len(sys.argv)<4):
         print ("Not enough arguments")
         sys.exit()
 
@@ -45,7 +47,7 @@ while True:
             else:
                 print("The input port value is  outside the range of 0 and 65535, using default port: 6444")
         except (ValueError):
-            print("The input port is not valit integer, using default port: 6444")
+            print("The input port is not valid integer, using default port: 6444")
 
     try:
          listeningSocket=socket(AF_INET, SOCK_STREAM)
@@ -65,11 +67,12 @@ while True:
             a=n_a
             b=n_b
             c=n_c
+            legal_move=1
             win=0
-            socket.sendall(soc,a, b, c, win, legal_move)
+            sendall(soc,a, b, c, win, legal_move)
             play=True
             while (play):
-                data_client=soc.recv()
+                data_client=soc.recv(unpack.size)
                 unpack_data=unpack.unpack(data_client)
                 heap=unpack_data[0]
                 num=unpack_data[1]
@@ -92,11 +95,11 @@ while True:
                     win=1
                     play=False
 
-                else:
+                elif(legal_move != 0):
                     if (a>=b and a>=c):
                         a-=1
                     elif (b>=a and b>=c):
-                        b=-1
+                        b-=1
                     else:
                         c-=1
 
@@ -104,7 +107,8 @@ while True:
                         win=2
                         play=False
 
-                    sendall(soc, a, b, c, win, legal_move)
+                sendall(soc, a, b, c, win, legal_move)
+                    
 
 
 

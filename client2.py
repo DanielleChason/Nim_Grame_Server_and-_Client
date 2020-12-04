@@ -1,14 +1,14 @@
-!/usr/bin/python3
+#!/usr/bin/python3
 
 
 import errno
 import struct
 import sys
-from socket import *
+import socket
 import binascii
 
 def sendall(socket, heap, num):
-    data=(socket, heap, num)
+    data=(heap, num)
     packed_data=pack.pack(*data)
     return socket.send(packed_data)
 
@@ -16,22 +16,22 @@ port=6444
 hostname='localhost'
 
 if (len(sys.argv)>=2):
-    hostname=int(sys.argv[1])
+    hostname=(sys.argv[1])
 
-if (len(sys.argv>=3)):
+if (len(sys.argv)>=3):
     try:
-        if (int(sys.argv[2])>=0 and int(sys.argv)<=65535):
-            host=int(sys.argv[2])
+        if (int(sys.argv[2])>=0 and int(sys.argv[2])<=65535):
+            port=int(sys.argv[2])
         else:
             print ("Invalid input for port, using default 6444")
     except ValueError:
         print ("Invalid input for port, using default 6444 ")
 
-unpack=struct.Struct('HH')
-pack=struct.Struct('HHHHH')
-
+unpack=struct.Struct('HHHHH')
+pack=struct.Struct('HH')
+print(hostname);
 try:
-    soc=socket.Socket(socket.AF_INET, socket.SOCK_STREAM)
+    soc=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     address=(hostname, port)
     soc.connect(address)
 except OSError as err:
@@ -44,7 +44,7 @@ except OSError as err:
 try:
     play=True
     while (play):
-        data_server=soc.recv()
+        data_server=soc.recv(unpack.size)
         unpack_data=unpack.unpack(data_server)
         a=int(unpack_data[0])
         b=int(unpack_data[1])
@@ -82,8 +82,8 @@ try:
                 else:
                     print ("Invalid character for heap")
 
-                if (arg[1]>0 and arg[1]<1001):
-                    num=arg[1]
+                if (int(arg[1])>0 and int(arg[1])<1001):
+                    num=int(arg[1])
                 else:
                     print ("Invalid number")
 
