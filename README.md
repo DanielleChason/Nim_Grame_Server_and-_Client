@@ -1,2 +1,2 @@
-# Nim_Grame_Server_and-_Client
+# Nim_Game_Server_and-_Client
 
